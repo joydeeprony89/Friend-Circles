@@ -4,16 +4,16 @@ namespace Friend_Circles
 {
     class Program
     {
-        public int row;
-        public int column;
         static void Main(string[] args)
         {
-            var grid = new int[4][]
+            var grid = new int[6][]
             {
-                new int[4] { 1, 1, 0, 0 },
-                new int[4] { 1, 1, 1, 0 },
-                new int[4] { 0, 1, 1, 0 },
-                new int[4] { 0, 0, 0, 1 }
+                new int[6] { 1,1,0,0,0,0 },
+                new int[6] { 1,1,0, 0, 0, 0 },
+                new int[6] { 0,0,1, 1, 1, 0},
+                new int[6] { 0, 0, 1, 1, 0, 0 },
+                new int[6] { 0,0,1, 0, 1, 0},
+                new int[6] { 0, 0, 0, 0, 0, 1 }
             };
 
             Program p = new Program();
@@ -27,41 +27,37 @@ namespace Friend_Circles
             if (grid == null || grid.Length == 0) return 0;
 
             int count = 0;
-
-            row = grid.Length;
-            column = grid[0].Length;
-
-            for (int i = 0; i < row; i++)
+            // reference array to mark the already visited vertex.
+            bool[] visited = new bool[grid.Length];
+            // loop for each person
+            for (int i = 0; i < grid.Length; i++)
             {
-                for (int j = 0; j < column; j++)
+                // if the person not yet visisted.
+                // perform DFS for that person.
+                if (!visited[i])
                 {
-                    if (grid[i][j] == 1)
-                    {
-                        // call the DFS helper method to recursively process all the adjacent cells.
-                        Helper(grid, i, j);
-                        count++;
-                    }
+                    DFS(grid, visited, i);
+                    count++;
                 }
             }
 
             return count;
         }
 
-        /// <summary>
-        /// This method will help us to perform DFS when we find 1 in a cell. It will traverse the adjacent cells where 1 is present and marked them as zero.
-        /// execution of this recursive method will end when there are no more adjacent '1'.
-        /// </summary>
-        /// <param name="grid">input 2D array</param>
-        /// <param name="i">row pos</param>
-        /// <param name="j">column pos</param>
-        void Helper(int[][] grid, int i, int j)
+        void DFS(int[][] grid, bool[] visited, int person)
         {
-            if (i < 0 || j < 0 || i >= row || j >= column || grid[i][j] != 1) return;
-            grid[i][j] = 0;
-            Helper(grid, i + 1, j);
-            Helper(grid, i - 1, j);
-            Helper(grid, i, j + 1);
-            Helper(grid, i, j - 1);
+            // for the passed person you check with other persons if they are friend == 1
+            for (int anotherPerson = 0; anotherPerson < grid.Length; anotherPerson++)
+            {
+                // person -> another person and another person is not yet visited
+                if (grid[person][anotherPerson] == 1 && !visited[anotherPerson])
+                {
+                    // mark visited
+                    visited[anotherPerson] = true;
+                    // perfor DFS for new person, to find out the un connected elements
+                    DFS(grid, visited, anotherPerson);
+                }
+            }
         }
     }
 }
